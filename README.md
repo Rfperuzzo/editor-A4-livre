@@ -112,9 +112,11 @@ Para gerar uma página de demonstração e uma captura da interface:
 powershell -ExecutionPolicy Bypass -File .\build_windows.ps1
 ```
 
-O script executa os testes antes de chamar PyInstaller e produz
+O script executa os testes antes de chamar PyInstaller, verifica o próprio executável e produz
 `dist/EditorA4Livre/EditorA4Livre.exe`. Distribua **a pasta inteira**.
 Parâmetros opcionais: `-Python CAMINHO_DO_PYTHON`, `-Output PASTA` e `-SkipTests`.
+O build isola o PATH para não incorporar DLLs incompatíveis de outras ferramentas
+instaladas no computador. O autoteste do executável roda mesmo com `-SkipTests`.
 
 Autoteste do pacote, sem interação ou rede:
 

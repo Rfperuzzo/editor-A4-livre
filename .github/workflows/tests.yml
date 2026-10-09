@@ -15,3 +15,9 @@ jobs:
       - run: New-Item -ItemType Directory -Force build
       - run: python -m pytest -q --basetemp=build/pytest-temp
       - run: python main.py --smoke-test build/smoke
+      - name: Build and test Windows executable
+        run: .\build_windows.ps1 -Python (Get-Command python).Source -Output build/package -SkipTests
+      - uses: actions/upload-artifact@v4
+        with:
+          name: EditorA4Livre-Windows-x64
+          path: build/package/EditorA4Livre
