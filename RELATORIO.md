@@ -52,8 +52,8 @@ O relatório reproduzível está em `docs/smoke-report.json`.
 O build inicialmente capturou uma DLL ICU incompatível presente no PATH de outra
 ferramenta. A causa foi reproduzida e corrigida isolando o PATH durante o empacotamento.
 O script agora executa automaticamente o autoteste do pacote e rejeita builds que
-falhem ou excedam 30 segundos. A integração contínua Windows também executa os testes,
-o autoteste pelo código-fonte e o build com autoteste do executável.
+falhem ou excedam 30 segundos. A entrega usa testes locais e autoteste do executável;
+o workflow do GitHub Actions foi removido conforme solicitado.
 
 ## Limites e validações pendentes
 
