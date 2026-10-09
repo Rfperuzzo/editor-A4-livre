@@ -2,6 +2,28 @@
 
 Data: 9 de outubro de 2026.
 
+## Atualização 1.1.0 — editor individual de figuras
+
+Todas as ferramentas geométricas abrem automaticamente um editor individual ao concluir
+o desenho. Cada figura guarda texto, fonte, alinhamento horizontal/vertical e cores
+próprios. O editor possui prévia, centralização nas duas direções e botões Aplicar/Cancelar.
+Duplo clique na figura ou o botão no painel reabre a edição. Cancelar preserva a figura
+sem aplicar o rascunho; confirmar afeta somente o ID aberto e gera um comando no histórico.
+
+Os textos acompanham transformação, duplicação, agrupamento, projeto e PDF. Retângulos
+e elipses usam uma área interna; linhas/setas usam um rótulo central. As caixas de texto
+livre continuam disponíveis. Projetos antigos mantêm suas formas sem rótulos inesperados.
+
+Foram acrescentados 27 testes para abertura automática nas seis ferramentas, isolamento
+entre figuras, cores, cancelamento, duplo clique, histórico, compatibilidade com projetos
+antigos, validação dos novos campos, persistência e alinhamento no PDF. O autoteste do
+executável também verifica o editor individual e a preservação do texto de outra figura.
+
+**193 testes automatizados passaram** na validação completa da versão 1.1.0.
+A prévia do editor e uma página com figuras de cores e textos diferentes foram
+inspecionadas visualmente. O PDF dessa página foi renderizado com Poppler: textos
+centralizados, cores individuais e rotação foram preservados.
+
 ## Funcionalidades implementadas
 
 - Página A4 única, retrato/paisagem, zoom de 25% a 400%, réguas em centímetros,
@@ -28,7 +50,7 @@ Data: 9 de outubro de 2026.
 Ambiente local: Windows 11, Python 3.14.5 de 64 bits, PySide6/Qt 6.12.0,
 PyInstaller 6.22.3, pytest 9.1.1 e pytest-qt 4.5.0.
 
-**166 testes automatizados passaram** na última execução completa, em 7,89 segundos.
+**166 testes automatizados passaram** na execução da versão 1.0.0, em 7,89 segundos.
 O conjunto cobre os 14 cenários da especificação. Inclui 96 combinações de interação
 real de mouse: oito alças, quatro rotações (0°, 45°, 90° e 270°) e três níveis de zoom
 (25%, 100% e 400%). Os testes verificam a âncora oposta, dimensões e desfazer/refazer.

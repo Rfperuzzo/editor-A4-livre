@@ -4,6 +4,7 @@
   "checks": [
     "mouse_resize_rotated",
     "undo_redo",
+    "individual_figure_editor",
     "project_roundtrip",
     "vector_a4_pdf"
   ],

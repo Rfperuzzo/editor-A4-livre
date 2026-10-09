@@ -12,7 +12,8 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QDockWidget, QFileDialog
 from .canvas import CanvasScene, CanvasView
 from .controller import Controller
 from .export.pdf_exporter import configure_page, export_pdf, render_document
-from .project.models import Document
+from .figure_editor import FigureEditor
+from .project.models import Document, GEOMETRIC_KINDS
 from .project.serializer import load_project, save_project
 from .properties_panel import PropertiesPanel
 from .theme import apply_theme
@@ -23,7 +24,9 @@ class MainWindow(QMainWindow):
         super().__init__()
         apply_theme()
         self.path: Path | None = None
+        self.figure_editor = None
         self.controller = Controller(self)
+        self.controller.item_editor_requested.connect(self.open_figure_editor)
         self.scene = CanvasScene(self.controller)
         QApplication.instance().aboutToQuit.connect(self.shutdown)
         self.view = CanvasView(self.scene)
@@ -82,6 +85,33 @@ class MainWindow(QMainWindow):
         except (OSError, ValueError, RuntimeError) as exc:
             QMessageBox.critical(self, "Não foi possível concluir", str(exc))
             return False
+
+    def open_figure_editor(self, uid: str) -> None:
+        """Janela por figura; a confirmação aplica apenas ao objeto que a abriu."""
+        if self.figure_editor is not None:
+            self.figure_editor.raise_()
+            self.figure_editor.activateWindow()
+            return
+        model = next((m for m in self.controller.document.items if m.id == uid), None)
+        if model is None or model.kind not in GEOMETRIC_KINDS or model.locked:
+            return
+        self.view.cancel_gesture()
+        self.controller.finish_text()
+        self.scene.clearSelection()
+        self.scene.graphics[uid].setSelected(True)
+        dialog = FigureEditor(model, self)
+        if self.testAttribute(Qt.WidgetAttribute.WA_DontShowOnScreen):
+            dialog.setAttribute(Qt.WidgetAttribute.WA_DontShowOnScreen)
+        self.figure_editor = dialog
+
+        def complete(result):
+            self.figure_editor = None
+            if result == FigureEditor.DialogCode.Accepted:
+                self.safe(lambda: self.controller.edit_figure(uid, dialog.draft))
+            dialog.deleteLater()
+            self.view.setFocus()
+        dialog.finished.connect(complete)
+        dialog.open()
 
     def make_actions(self):
         c = self.controller
@@ -341,7 +371,9 @@ class MainWindow(QMainWindow):
             "2. Use as oito alças para redimensionar; Shift mantém a proporção.\n"
             "3. Use a alça circular para girar; Shift ajusta em passos de 15°.\n"
             "4. Edite as medidas em mm no painel à direita.\n"
-            "5. Dê duplo clique no texto para escrever. Esc encerra a edição.\n"
+            "5. Ao criar uma figura, o editor de texto e cores abre automaticamente.\n"
+            "   Duplo clique na figura reabre seu editor individual.\n"
+            "   Duplo clique em texto livre permite escrever; Esc encerra.\n"
             "6. Ctrl seleciona vários; arraste no fundo para selecionar por área.\n"
             "7. Use Organizar para alinhar, distribuir e ordenar.\n"
             "8. Na aba Camadas, dê duplo clique para bloquear/desbloquear.\n"

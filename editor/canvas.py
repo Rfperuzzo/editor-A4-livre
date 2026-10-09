@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QGraphicsScene, QGraphicsView
 
 from .geometry import HANDLES, local_to_page, resize, rotate
 from .items.base_item import GraphicItem
-from .project.models import ItemModel
+from .project.models import GEOMETRIC_KINDS, ItemModel
 
 
 class CanvasScene(QGraphicsScene):
@@ -151,6 +151,8 @@ class CanvasView(QGraphicsView):
             self.mode = "draw"
             kind = {"square": "rectangle", "circle": "ellipse"}.get(self.tool, self.tool)
             m = ItemModel(kind=kind, x=p.x(), y=p.y(), width=1, height=1)
+            if kind in GEOMETRIC_KINDS:
+                m.alignment = "center"
             if kind == "text":
                 m.fill, m.stroke_width = "#00000000", 0
             self.preview = GraphicItem(m)
@@ -280,7 +282,7 @@ class CanvasView(QGraphicsView):
             self.controller.add(m)
             self.tool = "select"
             self.tool_finished.emit()
-            if m.kind == "text":
+            if m.kind in GEOMETRIC_KINDS or m.kind == "text":
                 self.scene().graphics[m.id].begin_text()
         elif mode in ("move", "resize", "rotate"):
             self.controller.record(self.before, {"move": "Move objetos", "resize": "Redimensiona objeto",

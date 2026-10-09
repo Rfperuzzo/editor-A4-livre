@@ -39,6 +39,20 @@ def run(window, directory: str) -> int:
         assert c.document.items[0].width == 45
         c.stack.redo()
         report["checks"].append("undo_redo")
+        uid = c.document.items[0].id
+        c.add(ItemModel(kind="ellipse", x=115, y=60, width=60, height=40, shape_text="Segunda figura"))
+        window.open_figure_editor(uid)
+        dialog = window.figure_editor
+        assert dialog and dialog.isVisible()
+        dialog.text.setPlainText("Minha figura")
+        dialog.center.click()
+        dialog.draft.fill = "#fffbbf24"
+        dialog.update_draft()
+        dialog.accept()
+        assert c.document.items[0].shape_text == "Minha figura"
+        assert c.document.items[0].fill == "#fffbbf24"
+        assert c.document.items[1].shape_text == "Segunda figura"
+        report["checks"].append("individual_figure_editor")
         c.add(ItemModel(kind="text", x=35, y=25, width=140, height=20, text="Editor A4 Livre", font_size=20,
                         fill="#00000000", stroke_width=0))
         save_project(c.document, target / "smoke.a4livre")
@@ -48,6 +62,8 @@ def run(window, directory: str) -> int:
         page = PdfReader(target / "smoke.pdf").pages[0]
         assert abs(float(page.mediabox.width) - 210 * 72 / 25.4) < .001
         assert "Editor" in page.extract_text()
+        assert "Minha figura" in page.extract_text()
+        assert "Segunda figura" in page.extract_text()
         report["checks"].append("vector_a4_pdf")
         window.view.fit_page()
         QApplication.processEvents()

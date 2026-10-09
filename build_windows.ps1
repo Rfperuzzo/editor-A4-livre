@@ -27,9 +27,11 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "PyInstaller falhou." }
     $bundle = Join-Path $Output "EditorA4Livre"
     Copy-Item -LiteralPath README.md -Destination $bundle
+    if (Test-Path -LiteralPath RELATORIO.md) { Copy-Item -LiteralPath RELATORIO.md -Destination $bundle }
     & $Python scripts/copy_licenses.py $bundle
     if ($LASTEXITCODE -ne 0) { throw "Não foi possível copiar os avisos das dependências." }
     if (Test-Path -LiteralPath examples) { Copy-Item -LiteralPath examples -Destination $bundle -Recurse -Force }
+    if (Test-Path -LiteralPath docs) { Copy-Item -LiteralPath docs -Destination $bundle -Recurse -Force }
     $smokeDir = Join-Path $PSScriptRoot ("build\smoke-" + [guid]::NewGuid().ToString('N'))
     $exe = (Resolve-Path -LiteralPath (Join-Path $bundle "EditorA4Livre.exe")).Path
     $smokeProcess = Start-Process -FilePath $exe -ArgumentList '--smoke-test', ('"{0}"' -f $smokeDir) `

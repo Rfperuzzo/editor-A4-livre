@@ -7,6 +7,8 @@ from PySide6.QtWidgets import (QCheckBox, QColorDialog, QComboBox, QDoubleSpinBo
                               QFormLayout, QGroupBox, QLabel, QListWidget, QListWidgetItem,
                               QPushButton, QScrollArea, QSpinBox, QTabWidget, QVBoxLayout, QWidget)
 
+from .project.models import GEOMETRIC_KINDS, TEXT_KINDS
+
 LABELS = {"rectangle": "Retângulo", "ellipse": "Elipse", "line": "Linha", "arrow": "Seta",
           "text": "Texto", "image": "Imagem", "group": "Grupo"}
 
@@ -22,6 +24,9 @@ class PropertiesPanel(QTabWidget):
         self.title = QLabel("Selecione um objeto")
         self.title.setStyleSheet("font-weight: 600; font-size: 15px; padding: 6px 0;")
         layout.addWidget(self.title)
+        self.edit_figure = QPushButton("Editar texto e cores desta figura…")
+        self.edit_figure.clicked.connect(self.open_figure_editor)
+        layout.addWidget(self.edit_figure)
         self.geometry_box, geometry = self.section(layout, "Posição e tamanho · mm")
         for key, label, low, high, suffix in (
                 ("x", "X", -100000, 100000, " mm"), ("y", "Y", -100000, 100000, " mm"),
@@ -73,6 +78,12 @@ class PropertiesPanel(QTabWidget):
             self.alignment.addItem(label, value)
         self.alignment.currentIndexChanged.connect(lambda: self.change("alignment", self.alignment.currentData()))
         text.addRow("Alinhamento", self.alignment)
+        self.vertical = QComboBox()
+        for label, value in (("Topo", "top"), ("Centro", "center"), ("Base", "bottom")):
+            self.vertical.addItem(label, value)
+        self.vertical.currentIndexChanged.connect(lambda: self.change("vertical_alignment", self.vertical.currentData()))
+        text.addRow("Vertical na figura", self.vertical)
+        self.text_form = text
         tip = QLabel("Duplo clique para editar o texto.\nShift nas alças mantém a proporção.\nDuplo clique na camada bloqueia/desbloqueia.")
         tip.setWordWrap(True)
         tip.setStyleSheet("color: #64748b; font-size: 11px; padding-top: 8px;")
@@ -134,6 +145,11 @@ class PropertiesPanel(QTabWidget):
         if color.isValid():
             self.change(key, color.name(QColor.NameFormat.HexArgb))
 
+    def open_figure_editor(self):
+        selected = self.controller.selected()
+        if len(selected) == 1 and selected[0].model.kind in GEOMETRIC_KINDS:
+            self.controller.item_editor_requested.emit(selected[0].model.id)
+
     def refresh(self, rebuild_layers=True):
         if self.refreshing:
             return
@@ -160,10 +176,14 @@ class PropertiesPanel(QTabWidget):
         self.layers.blockSignals(False)
         self.geometry_box.setEnabled(len(selected) == 1)
         self.style_box.setEnabled(bool(selected))
-        self.text_box.setVisible(bool(selected) and all(i.model.kind == "text" for i in selected))
+        single_figure = len(selected) == 1 and selected[0].model.kind in GEOMETRIC_KINDS
+        self.edit_figure.setVisible(single_figure)
+        self.text_box.setVisible(bool(selected) and all(i.model.kind in TEXT_KINDS for i in selected))
+        self.text_box.setEnabled(single_figure or bool(selected) and all(i.model.kind == "text" for i in selected))
+        self.text_form.setRowVisible(self.vertical, single_figure)
         self.order.setEnabled(len(selected) == 1)
         kinds = {i.model.kind for i in selected}
-        self.style_form.setRowVisible(self.colors["text_color"], "text" in kinds)
+        self.style_form.setRowVisible(self.colors["text_color"], bool(kinds & TEXT_KINDS))
         self.style_form.setRowVisible(self.colors["fill"], bool(kinds & {"rectangle", "ellipse", "text"}))
         has_border = bool(kinds - {"group"})
         self.style_form.setRowVisible(self.colors["stroke"], has_border)
@@ -182,6 +202,7 @@ class PropertiesPanel(QTabWidget):
             self.ratio.setEnabled(m.kind != "group")
             self.font.setCurrentText(m.font_family)
             self.alignment.setCurrentIndex(self.alignment.findData(m.alignment))
+            self.vertical.setCurrentIndex(self.vertical.findData(m.vertical_alignment))
             self.order.setMaximum(max(1, len(self.controller.document.items)))
             self.order.setValue(self.controller.document.items.index(m) + 1)
             for key, button in self.colors.items():

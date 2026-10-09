@@ -22,6 +22,11 @@ MIME = "application/x-editor-a4-livre+json"
 class Controller(QObject):
     changed = Signal()
     content_changed = Signal()
+    item_editor_requested = Signal(str)
+
+    # Somente estas propriedades podem ser alteradas pelo editor de uma figura.
+    FIGURE_FIELDS = ("shape_text", "font_family", "font_size", "bold", "italic", "underline",
+                     "alignment", "vertical_alignment", "text_color", "fill", "stroke")
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -71,6 +76,17 @@ class Controller(QObject):
 
     def add(self, model: ItemModel) -> None:
         self.mutate("Insere objeto", lambda: self.document.items.append(model), [model.id])
+
+    def edit_figure(self, uid: str, draft: ItemModel) -> None:
+        """Aplica uma edição exclusivamente ao ID aberto, em uma ação de histórico."""
+        model = next((m for m in self.document.items if m.id == uid), None)
+        if model is None or model.locked or model.kind != draft.kind:
+            return
+
+        def change():
+            for name in self.FIGURE_FIELDS:
+                setattr(model, name, getattr(draft, name))
+        self.mutate("Edita texto e cores da figura", change, [uid])
 
     def begin_text(self, item: GraphicItem) -> None:
         self.finish_text()

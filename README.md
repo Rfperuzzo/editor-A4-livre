@@ -7,13 +7,35 @@ sem conta, servidor ou banco de dados.
 
 ![Interface do Editor A4 Livre](docs/interface.png)
 
+## Texto e cores por figura — versão 1.1.0
+
+Ao desenhar um retângulo, quadrado, círculo, elipse, linha ou seta, abre automaticamente
+o **editor individual da figura**. Escreva seu texto, escolha fonte e tamanho, ajuste
+o alinhamento horizontal e vertical e selecione as cores do texto, preenchimento e borda.
+O botão **Centralizar texto na figura** centraliza nas duas direções.
+
+![Editor individual de uma figura](docs/editor-figura.png)
+
+A prévia mostra o resultado enquanto você edita. **Aplicar** salva as alterações somente
+na figura que abriu o editor; **Cancelar** descarta o rascunho, mantendo a figura na página.
+Cada figura guarda seu próprio texto e suas próprias cores. Dê duplo clique na figura,
+ou use **Editar texto e cores desta figura…** no painel, para reabrir seu editor.
+Uma edição confirmada gera uma única ação no histórico.
+
+O texto integrado acompanha a figura ao mover, girar, duplicar, agrupar, salvar ou
+exportar PDF. Ao redimensionar a figura, a fonte mantém seu tamanho e o texto reorganiza
+as linhas. Nas elipses, ele ocupa uma área interna para evitar as bordas curvas; em
+linhas e setas, aparece como um rótulo central. Textos muito longos são recortados à
+área disponível. Projetos antigos abrem com suas figuras sem texto adicional.
+
 ## Executar o pacote Windows
 
-Extraia o ZIP `EditorA4Livre-Windows-x64.zip` e abra `EditorA4Livre.exe`.
+Baixe o ZIP Windows da versão desejada, extraia e abra `EditorA4Livre.exe`.
 Mantenha a pasta `_internal` junto do executável; ela contém Python, Qt e as
 dependências. Não é necessário instalar Python para usar esse pacote.
 
 O exemplo `examples/demonstracao.a4livre` pode ser aberto e editado no aplicativo.
+O exemplo `examples/figuras-com-texto.a4livre` demonstra textos e cores próprios por figura.
 
 ## Instalação pelo código-fonte
 
@@ -51,8 +73,8 @@ Também é possível abrir um projeto pela linha de comando:
 7. Na aba **Camadas**, dê duplo clique para bloquear ou desbloquear um objeto.
 8. Salve em `.a4livre` para continuar editando ou exporte PDF para compartilhar.
 
-Textos e formas são independentes. Aumentar uma forma não altera a fonte de um texto
-sobreposto. Redimensionar a caixa de texto altera a quebra de linhas, sem ampliar
+Caixas de texto livre continuam independentes das formas. Aumentar uma forma não altera
+a fonte de um texto sobreposto nem a de seu texto integrado. Redimensionar a caixa de texto altera a quebra de linhas, sem ampliar
 a fonte. Conteúdo que exceder a altura da caixa é recortado. Grupos são escalados
 proporcionalmente, incluindo a aparência de seus filhos.
 
@@ -145,6 +167,9 @@ O JSON usa versão 1, uma lista ordenada de objetos e grupos recursivos; as posi
 dos filhos são relativas ao grupo. Coordenadas X/Y representam a origem local do
 objeto; a rotação ocorre visualmente em torno do centro. Não há execução de código,
 HTML remoto, scripts, fontes baixadas ou recursos externos em arquivos de projeto.
+O campo opcional `shape_text` armazena o texto integrado de cada figura e
+`vertical_alignment` seu alinhamento vertical. Ausência desses campos mantém os
+projetos da versão anterior compatíveis. As configurações de fonte e cor são por objeto.
 
 Limites de leitura: 100 MB por projeto, 25 MB por imagem, 40 megapixels por imagem,
 5.000 objetos e profundidade máxima de 20 grupos. Versões desconhecidas, IDs duplicados,

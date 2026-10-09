@@ -88,7 +88,7 @@ def parse_document(data: object) -> Document:
             if not isinstance(value, str) or len(value) > 32 or not QColor(value).isValid():
                 raise ValueError("Cor inválida.")
             setattr(m, name, value)
-        for name, limit in (("text", 1_000_000), ("font_family", 200)):
+        for name, limit in (("text", 1_000_000), ("shape_text", 1_000_000), ("font_family", 200)):
             value = raw.get(name, getattr(m, name))
             if not isinstance(value, str) or len(value) > limit:
                 raise ValueError(f"Conteúdo inválido: {name}.")
@@ -96,6 +96,9 @@ def parse_document(data: object) -> Document:
         m.alignment = raw.get("alignment", "left")
         if m.alignment not in ("left", "center", "right"):
             raise ValueError("Alinhamento inválido.")
+        m.vertical_alignment = raw.get("vertical_alignment", "center")
+        if m.vertical_alignment not in ("top", "center", "bottom"):
+            raise ValueError("Alinhamento vertical inválido.")
         if m.kind == "image":
             m.image = raw.get("image", "")
             image_bytes(m.image)
