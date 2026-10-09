@@ -1,0 +1,11 @@
+{
+  "python": "3.14.5",
+  "qt": "6.12.0",
+  "checks": [
+    "mouse_resize_rotated",
+    "undo_redo",
+    "project_roundtrip",
+    "vector_a4_pdf"
+  ],
+  "ok": true
+}
