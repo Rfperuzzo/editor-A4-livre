@@ -1,0 +1,392 @@
+PROJETO: Editor A4 Livre — Python + PySide6
+
+1. Objetivo
+
+Desenvolva do zero um aplicativo desktop para Windows 11 chamado Editor A4 Livre.
+
+O aplicativo será um editor visual de páginas A4, semelhante a um mini PowerPoint ou editor gráfico simplificado.
+
+O usuário deverá conseguir inserir, movimentar, redimensionar, rotacionar e editar objetos livremente sobre uma folha A4 virtual.
+
+O aplicativo será 100% offline, gratuito para uso local, sem login, sem servidor e sem banco de dados.
+
+Importante: implemente um produto funcional, não apenas um protótipo de interface.
+
+2. Tecnologias obrigatórias
+
+- Python 3.12 ou superior, com versão compatível com as dependências.
+- PySide6 (Qt Widgets).
+- QGraphicsView e QGraphicsScene para o editor.
+- QGraphicsItem ou subclasses próprias para os objetos.
+- JSON para salvar projetos editáveis.
+- QPdfWriter ou QPrinter para exportação PDF.
+- PyInstaller para criar executável Windows.
+
+Organize o código em módulos, seguindo uma arquitetura simples e de fácil manutenção.
+
+3. Interface principal
+
+A janela deverá possuir quatro áreas:
+
+A. Barra de ferramentas superior
+
+Botões para:
+
+- Novo projeto
+- Abrir projeto
+- Salvar
+- Salvar como
+- Desfazer e refazer
+- Copiar, colar e duplicar
+- Agrupar e desagrupar
+- Exportar PDF
+- Imprimir
+- Zoom
+- Orientação da página
+
+B. Painel de ferramentas esquerdo
+
+Ferramentas:
+
+1. Seleção
+2. Retângulo
+3. Quadrado
+4. Círculo
+5. Elipse
+6. Linha
+7. Seta
+8. Caixa de texto
+9. Inserir imagem
+
+C. Área central de edição
+
+Exibir uma página A4 branca, centralizada sobre um fundo cinza-claro.
+
+Permitir:
+
+- A4 retrato: 210 × 297 mm.
+- A4 paisagem: 297 × 210 mm.
+- Zoom de 25% até 400%.
+- Rolagem da área de edição.
+- Grade opcional.
+- Réguas horizontal e vertical em centímetros.
+- Guias de alinhamento.
+- Ajuste magnético opcional à grade.
+- Indicação visual dos limites da folha.
+
+O zoom não poderá modificar as dimensões reais dos elementos.
+
+D. Painel de propriedades direito
+
+Ao selecionar um objeto, apresentar:
+
+- Posição X e Y.
+- Largura.
+- Altura.
+- Rotação.
+- Cor de preenchimento.
+- Cor da borda.
+- Espessura da borda.
+- Opacidade.
+- Ordem de sobreposição.
+- Bloqueio de posição e edição.
+
+Utilizar centímetros ou milímetros na interface, convertidos corretamente para as coordenadas internas.
+
+4. Redimensionamento das formas geométricas — PRIORIDADE MÁXIMA
+
+Este é um dos requisitos mais importantes.
+
+Todo objeto geométrico deverá ser totalmente redimensionável usando o mouse.
+
+Ao selecionar uma forma, exibir oito alças:
+
+- Quatro nos cantos.
+- Quatro no centro das laterais.
+
+O usuário deverá conseguir:
+
+- Arrastar alças para aumentar ou diminuir a largura.
+- Arrastar alças para aumentar ou diminuir a altura.
+- Modificar largura e altura independentemente.
+- Arrastar cantos para modificar as duas dimensões.
+- Manter proporção segurando Shift.
+- Arrastar a forma inteira para outra posição.
+- Digitar medidas exatas no painel de propriedades.
+- Rotacionar usando uma alça específica.
+- Informar ângulo exato de rotação.
+- Redimensionar objetos rotacionados corretamente.
+
+Implementar um tamanho mínimo para evitar objetos com dimensões negativas ou inválidas.
+
+O redimensionamento deverá acontecer em tempo real, sem travamentos.
+
+As alças deverão manter um tamanho visual confortável mesmo quando o usuário modificar o zoom.
+
+Critério obrigatório de aceitação: criar um retângulo, puxar qualquer uma das oito alças e verificar que a geometria muda imediatamente, sem deslocamentos inesperados ou distorções.
+
+5. Ferramenta de texto livre
+
+Permitir adicionar caixas de texto em qualquer posição da folha.
+
+O usuário deverá conseguir:
+
+- Clicar duas vezes para editar.
+- Digitar múltiplas linhas.
+- Alterar fonte e tamanho.
+- Aplicar negrito, itálico e sublinhado.
+- Alterar cor.
+- Alinhar à esquerda, centro ou direita.
+- Girar em qualquer ângulo, inclusive 90°, 180° e 270°.
+- Movimentar e redimensionar a caixa de texto.
+- Duplicar o texto.
+- Colocar textos sobre formas geométricas.
+
+Aumentar um retângulo não deverá aumentar automaticamente o tamanho da fonte de um texto sobreposto.
+
+Textos e formas deverão ser objetos independentes, podendo ser agrupados.
+
+6. Inserção de imagens
+
+Permitir importar imagens PNG, JPG e JPEG.
+
+Funcionalidades:
+
+- Arrastar para posicionar.
+- Redimensionar pelas alças.
+- Manter proporção.
+- Rotacionar.
+- Alterar opacidade.
+- Alterar ordem de sobreposição.
+- Excluir e duplicar.
+
+As imagens deverão ser incorporadas ao arquivo do projeto, para que ele possa ser aberto em outro computador sem depender do caminho original da imagem.
+
+7. Seleção e manipulação
+
+Implementar:
+
+- Seleção individual.
+- Seleção múltipla com Ctrl.
+- Seleção por área.
+- Movimentação de vários elementos selecionados.
+- Copiar: Ctrl+C.
+- Colar: Ctrl+V.
+- Recortar: Ctrl+X.
+- Excluir: Delete.
+- Duplicar: Ctrl+D.
+- Desfazer: Ctrl+Z.
+- Refazer: Ctrl+Y.
+- Selecionar tudo: Ctrl+A.
+
+Utilizar QUndoStack e comandos apropriados para registrar operações editáveis.
+
+Uma operação de arrastar ou redimensionar deve gerar uma única ação no histórico, e não uma ação para cada movimento do mouse.
+
+Implementar também:
+
+- Trazer para frente.
+- Enviar para trás.
+- Alinhar objetos.
+- Distribuir horizontalmente.
+- Distribuir verticalmente.
+- Agrupar e desagrupar objetos.
+- Bloquear e desbloquear objetos.
+
+8. Sistema de arquivos
+
+Criar um formato próprio de projeto com extensão:
+
+".a4livre"
+
+O arquivo poderá usar JSON estruturado, contendo:
+
+- Versão do formato.
+- Dimensões e orientação da página.
+- Configurações da página.
+- Lista de objetos.
+- Tipo de cada objeto.
+- Coordenadas.
+- Dimensões.
+- Rotação.
+- Propriedades visuais.
+- Conteúdo de texto.
+- Imagens incorporadas.
+- Grupos e ordem de sobreposição.
+
+Garantir que um projeto salvo possa ser reaberto e editado sem perder informações.
+
+Implementar confirmação antes de fechar ou substituir um projeto que possui alterações não salvas.
+
+Utilizar escrita atômica ou mecanismo equivalente para reduzir riscos de corrupção durante o salvamento.
+
+9. Exportação PDF e impressão
+
+Este requisito é essencial.
+
+Exportar o conteúdo para PDF em tamanho A4 real, respeitando:
+
+- Retrato ou paisagem.
+- Medidas exatas.
+- Textos.
+- Imagens.
+- Formas.
+- Espessura das linhas.
+- Posições e rotações.
+
+O PDF não deverá conter:
+
+- Alças de seleção.
+- Grade do editor.
+- Réguas.
+- Guias.
+- Bordas de seleção.
+- Fundo cinza da interface.
+
+A exportação deverá preservar os elementos vetoriais sempre que possível.
+
+Não converter a folha inteira em screenshot para gerar PDF.
+
+Implementar também impressão por diálogo padrão do Windows.
+
+Garantir que a renderização não aplique escala ou margens adicionais inesperadas. Respeitar os limites físicos da impressora e oferecer ajuste quando necessário.
+
+10. Arquitetura sugerida
+
+Organize o projeto aproximadamente assim:
+
+Editor-A4-Livre/
+├── main.py
+├── requirements.txt
+├── README.md
+├── .gitignore
+├── editor/
+│   ├── main_window.py
+│   ├── canvas.py
+│   ├── page.py
+│   ├── tools.py
+│   ├── properties_panel.py
+│   ├── items/
+│   │   ├── base_item.py
+│   │   ├── shape_item.py
+│   │   ├── text_item.py
+│   │   ├── image_item.py
+│   │   └── group_item.py
+│   ├── commands/
+│   │   └── undo_commands.py
+│   ├── project/
+│   │   ├── serializer.py
+│   │   └── models.py
+│   └── export/
+│       └── pdf_exporter.py
+├── assets/
+├── tests/
+└── build/
+
+Adapte a estrutura quando houver justificativa técnica, sem criar complexidade desnecessária.
+
+Evite arquivos gigantes e responsabilidades misturadas.
+
+11. Requisitos de qualidade
+
+- Não usar serviços externos.
+- Não exigir conexão com a internet.
+- Não executar comandos arbitrários contidos em arquivos de projeto.
+- Validar arquivos antes de carregá-los.
+- Exibir mensagens claras de erro.
+- Evitar travamentos ao abrir arquivos inválidos.
+- Seguir boas práticas de orientação a objetos.
+- Manter a interface responsiva.
+- Documentar as classes e funções principais.
+- Usar type hints quando apropriado.
+- Separar os dados do projeto dos componentes visuais.
+
+Não incluir funcionalidades fictícias: cada botão disponível deverá executar sua função corretamente. Recursos não implementados deverão permanecer fora da interface até estarem funcionais.
+
+12. Testes obrigatórios
+
+Crie testes automatizados e realize testes de integração para:
+
+1. Criar, mover e redimensionar um retângulo.
+2. Converter quadrado em retângulo.
+3. Criar e redimensionar uma elipse.
+4. Rotacionar uma forma e redimensioná-la.
+5. Inserir e editar texto.
+6. Duplicar objetos.
+7. Agrupar e desagrupar.
+8. Desfazer e refazer operações.
+9. Salvar e reabrir projetos.
+10. Preservar imagens incorporadas.
+11. Alternar entre retrato e paisagem.
+12. Exportar PDF com dimensões A4 corretas.
+13. Verificar dimensões e posições dos objetos após salvar e reabrir.
+14. Testar o comportamento com diferentes níveis de zoom.
+
+Sempre que possível, executar os testes e apresentar os resultados efetivos.
+
+13. Experiência do usuário
+
+A interface deverá ser moderna, clara e intuitiva.
+
+Evitar excesso de menus ou configurações complexas.
+
+O fluxo principal deve ser:
+
+Abrir programa → selecionar ferramenta → desenhar na folha → ajustar tamanho → editar propriedades → salvar ou exportar.
+
+O usuário deverá conseguir montar um leiaute simples sem precisar consultar documentação.
+
+14. Entregas
+
+Forneça:
+
+1. Código-fonte completo.
+2. "requirements.txt" com dependências.
+3. README com instalação e execução no Windows.
+4. Testes automatizados.
+5. Instruções para gerar o ".exe" com PyInstaller.
+6. Script de build do Windows.
+7. Relatório das funcionalidades implementadas.
+8. Relação de pendências, caso existam.
+
+Se estiver executando em Windows com ambiente configurado, tente gerar e testar o executável.
+
+Não declare que testes ou builds passaram sem executá-los.
+
+15. Ordem de implementação
+
+Implemente em etapas:
+
+Etapa 1 — Base funcional
+
+Janela principal, página A4, seleção, retângulo, círculo, linhas, movimentação e redimensionamento com oito alças.
+
+Etapa 2 — Edição
+
+Texto livre, propriedades, rotação, imagens, atalhos, copiar, duplicar, desfazer e refazer.
+
+Etapa 3 — Organização
+
+Seleção múltipla, agrupamento, camadas, réguas, grade e alinhamentos.
+
+Etapa 4 — Persistência e impressão
+
+Salvar, abrir, exportar PDF, imprimir e validar medidas.
+
+Etapa 5 — Finalização
+
+Testes, correções, tratamento de erros, README e executável Windows.
+
+Ao final de cada etapa, execute os testes disponíveis e corrija os problemas identificados antes de prosseguir.
+
+16. Instruções finais
+
+Priorize estabilidade, precisão das medidas e funcionamento correto dos recursos de edição.
+
+O aplicativo não precisa reproduzir todas as funcionalidades do PowerPoint, mas deve ser excelente nas funcionalidades propostas.
+
+Não implemente dependências de Correios, triagem ou qualquer tipo específico de documento. O editor deve ser totalmente livre e genérico.
+
+Comece criando a estrutura do projeto e desenvolva a primeira versão funcional, seguindo as etapas até concluir o escopo. Não pare apenas na criação de arquivos ou interfaces visuais.
+
+Ao finalizar, explique como executar, como testar e como gerar o executável Windows.
